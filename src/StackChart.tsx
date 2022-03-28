@@ -63,6 +63,12 @@ export default function StackChart({ area, data }: StackChartProps): JSX.Element
     }, [stacked])
     // canvas related
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
+    // hover relatred
+    const [hoveredEnergyType, setHoveredEnergyType] = useState('')
+    const onPointerDownEnergyType = (energyType: string) => () => {
+        setHoveredEnergyType(energyType)
+    }
+    const onPointerLeaveEnergyType = () => setHoveredEnergyType('')
     useEffect(() => {
         const canvas = canvasRef.current
         if (canvas) {
@@ -95,15 +101,16 @@ export default function StackChart({ area, data }: StackChartProps): JSX.Element
                     ctx.save()
                     ctx.fillStyle = colorScale(stackData.key)
                     boundedArea(stackData)
-                    ctx.strokeStyle = 'white'
+
+                    ctx.globalAlpha = !hoveredEnergyType ? 1 : hoveredEnergyType === stackData.key ? 1 : 0.2
                     ctx.fill()
-                    ctx.stroke()
+
                     ctx.restore()
                     ctx.closePath()
                 })
             }
         }
-    }, [canvasRef, stacked, yScale, timeScale, colorScale, timelines])
+    }, [canvasRef, stacked, hoveredEnergyType, yScale, timeScale, colorScale, timelines])
     const energyKeys = useMemo(() => {
         if (stacked) {
             return stacked.sort((a, b) => b.index - a.index).map((data) => data.key)
@@ -116,6 +123,7 @@ export default function StackChart({ area, data }: StackChartProps): JSX.Element
                 .range([0, chartHeight * 0.8])
         }
     }, [energyKeys])
+
     // interact related
     const [hoverRect, setHoverRect] = useState<DataRect<Data> | null>(null)
     const interactCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -325,7 +333,13 @@ export default function StackChart({ area, data }: StackChartProps): JSX.Element
                                 const bandWidth = energyKeyBandScale.bandwidth()
                                 const keyColor = colorScale(energyKey)
                                 return (
-                                    <g className="hover:cursor-pointer" key={key} transform={`translate(10, ${yPos})`}>
+                                    <g
+                                        className="hover:cursor-pointer"
+                                        key={key}
+                                        transform={`translate(10, ${yPos})`}
+                                        onPointerEnter={onPointerDownEnergyType(energyKey)}
+                                        onPointerLeave={onPointerLeaveEnergyType}
+                                    >
                                         <rect
                                             x={0}
                                             y={bandWidth * 0.2}

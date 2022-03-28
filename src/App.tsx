@@ -69,16 +69,16 @@ export default function App() {
                 </div>
                 <div className="flex items-center gap-5 pr-5">
                     <a
-                        className={`font-bold cursor-pointer hover:underline ${
-                            visualzationType === 'map' ? 'text-slate-100' : 'text-black'
+                        className={`font-bold cursor-pointer  ${
+                            visualzationType !== 'map' ? 'text-white/20' : 'text-white'
                         }`}
                         onClick={() => setVisuType('map')}
                     >
                         연도별 지도
                     </a>
                     <a
-                        className={`font-bold cursor-pointer hover:underline ${
-                            visualzationType === 'country' ? 'text-slate-100' : 'text-black'
+                        className={`font-bold cursor-pointer  ${
+                            visualzationType !== 'country' ? 'text-white/20' : 'text-white'
                         }`}
                         onClick={() => setVisuType('country')}
                     >
